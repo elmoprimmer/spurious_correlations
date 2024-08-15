@@ -16,6 +16,7 @@ import pickle
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
+from torchvision.models import vit_b_16
 
 from wb_data import WaterBirdsDataset, get_loader, get_transform_cub, log_data
 from utils import Logger, AverageMeter, set_seed, evaluate, get_y_p
@@ -56,8 +57,17 @@ parser.add_argument(
 parser.add_argument(
     "--tune_class_weights_dfr_train", action='store_true',
     help="Learn class weights for DFR(Train)")
-args = parser.parse_args()
+parser.add_argument(
+    "--seed", type=int, default=0, required=False, help="Random seed for reproducibility")
+parser.add_argument(
+    "--skip_dfr_train_subset_tune", type=bool, default=False, required=False, help="Skip dfr_train_subset_tune, so set best_hyper = [1.0, 1.0, 1.0]")
+parser.add_argument(
+    "--model_type", type=str, default="resnet50", required=False, help="pick model type: resnet50 or vit_b_16")
 
+
+
+args = parser.parse_args()
+set_seed(args.seed)
 
 def dfr_on_validation_tune(
         all_embeddings, all_y, all_g, preprocess=True,
@@ -197,6 +207,9 @@ def dfr_on_validation_eval(
 def dfr_train_subset_tune(
         all_embeddings, all_y, all_g, preprocess=True,
         learn_class_weights=False):
+    
+    if args.skip_dfr_train_subset_tune:
+      return [1.0,1.0,1.0]
 
     x_val = all_embeddings["val"]
     y_val = all_y["val"]
@@ -242,6 +255,8 @@ def dfr_train_subset_tune(
 
     ks, vs = list(worst_accs.keys()), list(worst_accs.values())
     best_hypers = ks[np.argmax(vs)]
+
+    
     return best_hypers
 
 
@@ -331,44 +346,100 @@ val_loader = get_loader(
     valset, train=False, reweight_groups=None, reweight_classes=None,
     **loader_kwargs)
 
-# Load model
-n_classes = trainset.n_classes
-model = torchvision.models.resnet50(pretrained=False)
-d = model.fc.in_features
-model.fc = torch.nn.Linear(d, n_classes)
-model.load_state_dict(torch.load(
-    args.ckpt_path
-))
-model.cuda()
-model.eval()
 
-# Evaluate model
-print("Base Model")
-base_model_results = {}
-get_yp_func = partial(get_y_p, n_places=trainset.n_places)
-base_model_results["test"] = evaluate(model, test_loader, get_yp_func)
-base_model_results["val"] = evaluate(model, val_loader, get_yp_func)
-base_model_results["train"] = evaluate(model, train_loader, get_yp_func)
-print(base_model_results)
-print()
 
-model.eval()
+if args.model_type == "resnet50":
+    # Evaluate model
+    print("Model: ResNet50")
 
-# Extract embeddings
-def get_embed(m, x):
-    x = m.conv1(x)
-    x = m.bn1(x)
-    x = m.relu(x)
-    x = m.maxpool(x)
+    # Load model
+    n_classes = trainset.n_classes
+    model = torchvision.models.resnet50(pretrained=False)
+    d = model.fc.in_features
+    model.fc = torch.nn.Linear(d, n_classes)
+    model.load_state_dict(torch.load(
+        args.ckpt_path
+    ))
+    model.cuda()
+    model.eval()
 
-    x = m.layer1(x)
-    x = m.layer2(x)
-    x = m.layer3(x)
-    x = m.layer4(x)
 
-    x = m.avgpool(x)
-    x = torch.flatten(x, 1)
-    return x
+    print("Base Model")
+    base_model_results = {}
+    get_yp_func = partial(get_y_p, n_places=trainset.n_places)
+    base_model_results["test"] = evaluate(model, test_loader, get_yp_func)
+    base_model_results["val"] = evaluate(model, val_loader, get_yp_func)
+    base_model_results["train"] = evaluate(model, train_loader, get_yp_func)
+    print(base_model_results)
+    print()
+
+    model.eval()
+
+    # Extract embeddings
+    def get_embed(m, x):
+        x = m.conv1(x)
+        x = m.bn1(x)
+        x = m.relu(x)
+        x = m.maxpool(x)
+
+        x = m.layer1(x)
+        x = m.layer2(x)
+        x = m.layer3(x)
+        x = m.layer4(x)
+
+        x = m.avgpool(x)
+        x = torch.flatten(x, 1)
+        return x
+
+
+if args.model_type == "vit_b_16":
+    print("Model: Vit-B_16")
+
+    # Load model
+    n_classes = trainset.n_classes
+    model = vit_b_16(weights='DEFAULT')
+    d = model.heads.head.in_features
+    model.heads.head = torch.nn.Linear(d, n_classes)
+    model.load_state_dict(torch.load(
+        args.ckpt_path
+    ))
+    model.cuda()
+    model.eval()
+
+    # Evaluate model
+    print("Base Model")
+    base_model_results = {}
+    get_yp_func = partial(get_y_p, n_places=trainset.n_places)
+    base_model_results["test"] = evaluate(model, test_loader, get_yp_func)
+    base_model_results["val"] = evaluate(model, val_loader, get_yp_func)
+    base_model_results["train"] = evaluate(model, train_loader, get_yp_func)
+    print(base_model_results)
+    print()
+
+    model.eval()
+
+
+    # Extract embeddings
+    def get_embed(m, x):
+        if len(x.shape) < 4:
+            x = x.unsqueeze(0)
+        b, c, fh, fw = x.shape
+
+        x = m.conv_proj(x)
+
+        x = x.flatten(2).transpose(1, 2)
+        if hasattr(m, 'class_token'):
+            x = torch.cat((m.class_token.expand(b, -1, -1), x), dim=1)
+        if hasattr(m, 'pos_embed'):
+            x = x + m.pos_embed
+        x = m.encoder(x)
+        if hasattr(m, 'pre_logits'):
+            x = m.pre_logits(x)
+            x = torch.tanh(x)
+        if hasattr(m, 'norm'):
+            x = m.norm(x)[:, 0]
+        x = x.view(x.size(0), -1)
+        return x
 
 
 all_embeddings = {}
@@ -378,6 +449,7 @@ for name, loader in [("train", train_loader), ("test", test_loader), ("val", val
     all_y[name], all_p[name], all_g[name] = [], [], []
     for x, y, g, p in tqdm.tqdm(loader):
         with torch.no_grad():
+
             all_embeddings[name].append(get_embed(model, x.cuda()).detach().cpu().numpy())
             all_y[name].append(y.detach().cpu().numpy())
             all_g[name].append(g.detach().cpu().numpy())
