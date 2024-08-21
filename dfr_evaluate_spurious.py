@@ -207,7 +207,7 @@ def dfr_on_validation_eval(
 def dfr_train_subset_tune(
         all_embeddings, all_y, all_g, preprocess=True,
         learn_class_weights=False):
-    
+
     if args.skip_dfr_train_subset_tune:
       return [1.0,1.0,1.0]
 
@@ -256,7 +256,7 @@ def dfr_train_subset_tune(
     ks, vs = list(worst_accs.keys()), list(worst_accs.values())
     best_hypers = ks[np.argmax(vs)]
 
-    
+
     return best_hypers
 
 
@@ -317,6 +317,126 @@ def dfr_train_subset_eval(
                   for g in range(n_groups)]
     return test_accs, test_mean_acc, train_accs
 
+
+def retrain_all_linear_layers(
+        model, train_loader, criterion, num_epochs=10, learning_rate=0.001):
+    """
+    Retrains all linear layers of vit_b_16, with group reweighting.
+
+    Args:
+    - model
+    - train_loader
+    - criterion: Loss function
+    - num_epochs
+    - learning_rate: Learning rate for the optimizer.
+
+    Returns:
+    - model
+    """
+
+    for param in model.parameters():
+        param.requires_grad = False
+
+    for name, module in model.named_modules():
+        if isinstance(module, torch.nn.Linear):
+            for param in module.parameters():
+                param.requires_grad = True
+
+    optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=learning_rate)
+
+    x_train_list, y_train_list, g_train_list = [], [], []
+    for x, y, g, _ in train_loader:
+        x_train_list.append(x)
+        y_train_list.append(y)
+        g_train_list.append(g)
+
+    x_train = torch.cat(x_train_list, dim=0)
+    y_train = torch.cat(y_train_list, dim=0)
+    g_train = torch.cat(g_train_list, dim=0)
+
+    n_groups = torch.max(g_train).item() + 1
+
+    g_idx = [torch.nonzero(g_train == g).squeeze(1) for g in range(n_groups)]
+    min_g = min([len(g) for g in g_idx])
+    for g in g_idx:
+        indices = torch.randperm(len(g))
+        g[:] = g[indices]
+    x_train = torch.cat([x_train[g[:min_g]] for g in g_idx], dim=0)
+    y_train = torch.cat([y_train[g[:min_g]] for g in g_idx], dim=0)
+    g_train = torch.cat([g_train[g[:min_g]] for g in g_idx], dim=0)
+
+    print(f"Balanced group sizes: {torch.bincount(g_train)}")
+
+    # training loop
+    model.train()
+    for epoch in tqdm.tqdm(num_epochs):
+        for i in range(0, len(x_train), train_loader.batch_size):
+            x_batch = x_train[i:i + train_loader.batch_size].cuda()
+            y_batch = y_train[i:i + train_loader.batch_size].cuda()
+
+            optimizer.zero_grad()
+            outputs = model(x_batch)
+            loss = criterion(outputs, y_batch)
+            loss.backward()
+            optimizer.step()
+
+    return model
+
+
+
+def evaluate_model(model, train_loader, test_loader):
+    """
+    Evaluates the model on the training and test sets, calculating group-wise accuracies.
+
+    Args:
+    - model
+    - train_loader
+    - test_loader
+
+    Returns:
+    - test_accs
+    - test_mean_acc
+    - train_accs
+    """
+
+    model.eval()
+
+    y_train_list, g_train_list, preds_train_list = [], [], []
+    with torch.no_grad():
+        for x, y, g, _ in train_loader:
+            x, y, g = x.cuda(), y.cuda(), g.cuda()
+            outputs = model(x)
+            preds_train = torch.argmax(outputs, dim=1)
+            preds_train_list.append(preds_train.cpu())
+            y_train_list.append(y.cpu())
+            g_train_list.append(g.cpu())
+
+    y_train = torch.cat(y_train_list, dim=0)
+    g_train = torch.cat(g_train_list, dim=0)
+    preds_train = torch.cat(preds_train_list, dim=0)
+
+    y_test_list, g_test_list, preds_test_list = [], [], []
+    with torch.no_grad():
+        for x, y, g, _ in test_loader:
+            x, y, g = x.cuda(), y.cuda(), g.cuda()
+            outputs = model(x)
+            preds_test = torch.argmax(outputs, dim=1)
+            preds_test_list.append(preds_test.cpu())
+            y_test_list.append(y.cpu())
+            g_test_list.append(g.cpu())
+
+    y_test = torch.cat(y_test_list, dim=0)
+    g_test = torch.cat(g_test_list, dim=0)
+    preds_test = torch.cat(preds_test_list, dim=0)
+
+    n_groups = torch.max(g_train).item() + 1
+
+    test_accs = [(preds_test == y_test)[g_test == g].float().mean().item() for g in range(n_groups)]
+    test_mean_acc = (preds_test == y_test).float().mean().item()
+
+    train_accs = [(preds_train == y_train)[g_train == g].float().mean().item() for g in range(n_groups)]
+
+    return test_accs, test_mean_acc, train_accs
 
 
 ## Load data
@@ -460,6 +580,34 @@ for name, loader in [("train", train_loader), ("test", test_loader), ("val", val
     all_p[name] = np.concatenate(all_p[name])
 
 
+
+# DFR on all linear layers
+print("DFR on all linear layers")
+retrain_train_results = {}
+model = retrain_all_linear_layers(
+    model=model,
+    train_loader=train_loader,
+    criterion=torch.nn.CrossEntropyLoss(),
+    num_epochs=10,
+    learning_rate=0.001
+)
+
+test_accs, test_mean_acc, train_accs = evaluate_model(
+    model=model,
+    train_loader=train_loader,
+    test_loader=test_loader
+)
+retrain_train_results["test_accs"] = test_accs
+retrain_train_results["train_accs"] = train_accs
+retrain_train_results["test_worst_acc"] = np.min(test_accs)
+retrain_train_results["test_mean_acc"] = test_mean_acc
+
+# Print the results
+print("Retrain Results:")
+print(retrain_train_results)
+print()
+
+
 # DFR on validation
 print("DFR on validation")
 dfr_val_results = {}
@@ -496,11 +644,13 @@ print(dfr_train_results)
 print()
 
 
+
 all_results = {}
 all_results["base_model_results"] = base_model_results
 all_results["dfr_val_results"] = dfr_val_results
 all_results["dfr_train_results"] = dfr_train_results
 print(all_results)
+
 
 with open(args.result_path, 'wb') as f:
     pickle.dump(all_results, f)
