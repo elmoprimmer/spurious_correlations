@@ -319,7 +319,7 @@ def dfr_train_subset_eval(
 
 
 def retrain_all_linear_layers(
-        model, train_loader, criterion, num_epochs=10, learning_rate=0.001):
+        model, train_loader, criterion, num_epochs=100, learning_rate=0.001):
     """
     Retrains all linear layers of vit_b_16, with group reweighting.
 
@@ -356,7 +356,7 @@ def retrain_all_linear_layers(
 
     n_groups = torch.max(g_train).item() + 1
 
-    g_idx = [torch.nonzero(g_train == g).squeeze(1) for g in range(n_groups)]
+    g_idx = [torch.where(g_train == g)[0] for g in range(n_groups)]
     min_g = min([len(g) for g in g_idx])
     for g in g_idx:
         indices = torch.randperm(len(g))
@@ -369,7 +369,7 @@ def retrain_all_linear_layers(
 
     # training loop
     model.train()
-    for epoch in tqdm.tqdm(num_epochs):
+    for epoch in tqdm.tqdm(range(num_epochs)):
         for i in range(0, len(x_train), train_loader.batch_size):
             x_batch = x_train[i:i + train_loader.batch_size].cuda()
             y_batch = y_train[i:i + train_loader.batch_size].cuda()
@@ -588,7 +588,7 @@ model = retrain_all_linear_layers(
     model=model,
     train_loader=train_loader,
     criterion=torch.nn.CrossEntropyLoss(),
-    num_epochs=10,
+    num_epochs=100,
     learning_rate=0.001
 )
 
