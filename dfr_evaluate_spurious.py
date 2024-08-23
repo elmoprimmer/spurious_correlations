@@ -338,9 +338,18 @@ def retrain_all_linear_layers(
         param.requires_grad = False
 
     for name, module in model.named_modules():
-        if isinstance(module, torch.nn.Linear):
+        if "mlp" in name and isinstance(module, torch.nn.Linear):
             for param in module.parameters():
                 param.requires_grad = True
+
+    for name, module in model.named_modules():
+        if "encoder.ln" in name and isinstance(module, torch.nn.LayerNorm):
+            for param in module.parameters():
+                param.requires_grad = True
+
+    for param in model.heads.head.parameters():
+        param.requires_grad = True
+
 
     optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=learning_rate)
 
@@ -370,6 +379,8 @@ def retrain_all_linear_layers(
     # training loop
     model.train()
     for epoch in tqdm.tqdm(range(num_epochs)):
+        epoch_loss = 0.0
+        n = 0
         for i in range(0, len(x_train), train_loader.batch_size):
             x_batch = x_train[i:i + train_loader.batch_size].cuda()
             y_batch = y_train[i:i + train_loader.batch_size].cuda()
@@ -379,6 +390,13 @@ def retrain_all_linear_layers(
             loss = criterion(outputs, y_batch)
             loss.backward()
             optimizer.step()
+
+            epoch_loss += loss.item()
+            n += 1
+
+        avg_loss = epoch_loss / n
+        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.4f}")
+
 
     return model
 
