@@ -576,6 +576,8 @@ if args.model_type == "vit_b_16":
             x = torch.tanh(x)
         if hasattr(m, 'norm'):
             x = m.norm(x)[:, 0]
+        else:
+            x = x[:,0]
         x = x.view(x.size(0), -1)
         return x
 
@@ -606,7 +608,7 @@ model = retrain_all_linear_layers(
     model=model,
     train_loader=train_loader,
     criterion=torch.nn.CrossEntropyLoss(),
-    num_epochs=100,
+    num_epochs=10,
     learning_rate=0.001
 )
 
