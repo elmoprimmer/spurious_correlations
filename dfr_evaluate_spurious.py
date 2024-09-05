@@ -41,8 +41,14 @@ parser.add_argument(
     default=None,
     help="Train dataset directory")
 parser.add_argument(
-    "--result_path", type=str, default="logs/",
+    "--result_path", type=str, default="logs/results.pkl",
     help="Path to save results")
+parser.add_argument(
+    "--DFR_retrained_model_path", type=str, default="logs/dfr_model.pth",
+    help="Path to save updated model")
+parser.add_argument(
+    "--DFR_logreg_path", type=str, default="logs/dfr_logreg.pth",
+    help="Path to save logreg model (validation)")
 parser.add_argument(
     "--ckpt_path", type=str, default=None, help="Checkpoint path")
 parser.add_argument(
@@ -193,6 +199,10 @@ def dfr_on_validation_eval(
     logreg.fit(x_train[:n_classes], np.arange(n_classes))
     logreg.coef_ = np.mean(coefs, axis=0)
     logreg.intercept_ = np.mean(intercepts, axis=0)
+
+    with open(args.DFR_logreg_path, 'wb') as file:
+        pickle.dump(logreg, file)
+
     preds_test = logreg.predict(x_test)
     preds_train = logreg.predict(x_train)
     n_groups = np.max(g_train) + 1
@@ -307,6 +317,9 @@ def dfr_train_subset_eval(
     logreg.coef_ = np.mean(coefs, axis=0)
     logreg.intercept_ = np.mean(intercepts, axis=0)
 
+
+
+
     preds_test = logreg.predict(x_test)
     preds_train = logreg.predict(x_train)
     n_groups = np.max(g_train) + 1
@@ -337,15 +350,15 @@ def retrain_all_linear_layers(
     for param in model.parameters():
         param.requires_grad = False
 
-    for name, module in model.named_modules():
-        if "mlp" in name and isinstance(module, torch.nn.Linear):
-            for param in module.parameters():
-                param.requires_grad = True
+    #for name, module in model.named_modules():
+    #    if "mlp" in name and isinstance(module, torch.nn.Linear):
+    #        for param in module.parameters():
+    #            param.requires_grad = True
 
-    for name, module in model.named_modules():
-        if "encoder.ln" in name and isinstance(module, torch.nn.LayerNorm):
-            for param in module.parameters():
-                param.requires_grad = True
+    #for name, module in model.named_modules():
+    #    if "encoder.ln" in name and isinstance(module, torch.nn.LayerNorm):
+    #        for param in module.parameters():
+    #            param.requires_grad = True
 
     for param in model.heads.head.parameters():
         param.requires_grad = True
@@ -608,7 +621,7 @@ model = retrain_all_linear_layers(
     model=model,
     train_loader=train_loader,
     criterion=torch.nn.CrossEntropyLoss(),
-    num_epochs=10,
+    num_epochs=100,
     learning_rate=0.001
 )
 
@@ -621,6 +634,10 @@ retrain_train_results["test_accs"] = test_accs
 retrain_train_results["train_accs"] = train_accs
 retrain_train_results["test_worst_acc"] = np.min(test_accs)
 retrain_train_results["test_mean_acc"] = test_mean_acc
+
+
+torch.save(model.state_dict(), args.DFR_retrained_model_path)
+
 
 # Print the results
 print("Retrain Results:")
