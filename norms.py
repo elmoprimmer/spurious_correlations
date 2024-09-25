@@ -8,17 +8,8 @@ class Norms:
     def __init__(self, model, k=100):
         self.model = model
         self.k = k  # Number of seeds to expand
-
-        # Extract model parameters
-        #self_attention_layer = model.encoder.layers[-1].self_attention
-        #self.in_proj_weight = self_attention_layer.in_proj_weight
         self.embed_dim = 768
-        #self.num_heads = self_attention_layer.num_heads
-        #print(self.num_heads)
-        #self.head_dim = self.embed_dim // self.num_heads
 
-        # Extract the weight matrix for the keys (Wk) from the combined weight matrix
-        #self.W_K = self.in_proj_weight[self.embed_dim:2 * self.embed_dim, :]
 
         # Create the extraction model
         self.conv_out_model = Extract(model, node_out="encoder.layers.encoder_layer_11.self_attention")
@@ -31,23 +22,17 @@ class Norms:
         if isinstance(out, tuple):
             out = out[0]
         out = out[0, 1:, :].view(196, 12, 64) #1,197,768 -> 196,768 -> 196,12,64
-
-        norms = torch.norm(out, dim=1, keepdim=True)
-        print(norms.shape)
-
+        norms = torch.norm(out, dim=1, keepdim=True) #196,12,64 -> 196,1,64
         return norms
 
 
     def visualize_heatmap(self, image, norms, figsize=(20, 15)):
-        norm_means = norms.mean(dim=2)
-        print(norm_means.shape)
+        norm_means = norms.mean(dim=2) #196,1,64 -> 196
         heatmap = norm_means.reshape(14, 14).cpu().numpy()
-
         plt.figure(figsize=(figsize[0], figsize[1]))
 
         image = image.cpu().numpy() * 0.5 + 0.5
         image = cv2.normalize(image, image, 0, 1, cv2.NORM_MINMAX)
-        print(image.min().item(),image.max().item())
         image = image.transpose(1, 2, 0)
 
         plt.imshow(image, alpha=1)
