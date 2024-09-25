@@ -22,12 +22,12 @@ class Norms:
         if isinstance(out, tuple):
             out = out[0]
         out = out[0, 1:, :].view(196, 12, 64) #1,197,768 -> 196,768 -> 196,12,64
-        norms = torch.norm(out, dim=1, keepdim=True) #196,12,64 -> 196,1,64
+        norms = torch.norm(out, dim=2, keepdim=True) #196,12,64 -> 196,12,1
         return norms
 
 
     def visualize_heatmap(self, image, norms, figsize=(20, 15)):
-        norm_means = norms.mean(dim=2) #196,1,64 -> 196
+        norm_means = norms.mean(dim=1) #196,12,1 -> 196
         heatmap = norm_means.reshape(14, 14).cpu().numpy()
         plt.figure(figsize=(figsize[0], figsize[1]))
 
