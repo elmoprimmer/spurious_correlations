@@ -1,0 +1,3 @@
+[submodule "external/transformer_explainability"]
+	path = external/transformer_explainability
+	url = https://github.com/hila-chefer/Transformer-Explainability.git
