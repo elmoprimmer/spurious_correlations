@@ -18,9 +18,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from torchvision.models import vit_b_16
 
+from ISIC_ViT import isic_data
 from wb_data import WaterBirdsDataset, get_loader, get_transform_cub, log_data
-from utils import Logger, AverageMeter, set_seed, evaluate, get_y_p
 
+from utils import Logger, AverageMeter, set_seed, evaluate, get_y_p
 
 # WaterBirds
 C_OPTIONS = [1., 0.7, 0.3, 0.1, 0.07, 0.03, 0.01]
@@ -32,8 +33,7 @@ REG = "l1"
 # CLASS_WEIGHT_OPTIONS = [1., 2., 3., 10., 100, 300, 500]
 
 CLASS_WEIGHT_OPTIONS = [{0: 1, 1: w} for w in CLASS_WEIGHT_OPTIONS] + [
-        {0: w, 1: 1} for w in CLASS_WEIGHT_OPTIONS]
-
+    {0: w, 1: 1} for w in CLASS_WEIGHT_OPTIONS]
 
 parser = argparse.ArgumentParser(description="Tune and evaluate DFR.")
 parser.add_argument(
@@ -66,19 +66,20 @@ parser.add_argument(
 parser.add_argument(
     "--seed", type=int, default=0, required=False, help="Random seed for reproducibility")
 parser.add_argument(
-    "--skip_dfr_train_subset_tune", type=bool, default=False, required=False, help="Skip dfr_train_subset_tune, so set best_hyper = [1.0, 1.0, 1.0]")
+    "--skip_dfr_train_subset_tune", type=bool, default=False, required=False,
+    help="Skip dfr_train_subset_tune, so set best_hyper = [1.0, 1.0, 1.0]")
 parser.add_argument(
-    "--model_type", type=str, default="resnet50", required=False, help="pick model type: resnet50 or vit_b_16")
-
-
+    "--model_type", type=str, default="vit_b_16", required=False, help="pick model type: resnet50 or vit_b_16")
+parser.add_argument("--dataset", type=str, default="waterbird", help="waterbird or ISIC")
+parser.add_argument("--label_csv", type=str)
 
 args = parser.parse_args()
 set_seed(args.seed)
 
+
 def dfr_on_validation_tune(
         all_embeddings, all_y, all_g, preprocess=True,
         balance_val=False, add_train=True, num_retrains=1):
-
     worst_accs = {}
     for i in range(num_retrains):
         x_val = all_embeddings["val"]
@@ -118,7 +119,6 @@ def dfr_on_validation_tune(
             scaler = StandardScaler()
             x_train = scaler.fit_transform(x_train)
             x_val = scaler.transform(x_val)
-
 
         if balance_val and not add_train:
             cls_w_options = [{0: 1., 1: 1.}]
@@ -217,9 +217,8 @@ def dfr_on_validation_eval(
 def dfr_train_subset_tune(
         all_embeddings, all_y, all_g, preprocess=True,
         learn_class_weights=False):
-
     if args.skip_dfr_train_subset_tune:
-      return [1.0,1.0,1.0]
+        return [1.0, 1.0, 1.0]
 
     x_val = all_embeddings["val"]
     y_val = all_y["val"]
@@ -266,7 +265,6 @@ def dfr_train_subset_tune(
     ks, vs = list(worst_accs.keys()), list(worst_accs.values())
     best_hypers = ks[np.argmax(vs)]
 
-
     return best_hypers
 
 
@@ -297,7 +295,7 @@ def dfr_train_subset_eval(
             x_train = scaler.transform(x_train)
 
         logreg = LogisticRegression(penalty=REG, C=c, solver="liblinear",
-                                        class_weight={0: w1, 1: w2})
+                                    class_weight={0: w1, 1: w2})
         logreg.fit(x_train, y_train)
 
         coefs.append(logreg.coef_)
@@ -316,9 +314,6 @@ def dfr_train_subset_eval(
     logreg.fit(x_train[:n_classes], np.arange(n_classes))
     logreg.coef_ = np.mean(coefs, axis=0)
     logreg.intercept_ = np.mean(intercepts, axis=0)
-
-
-
 
     preds_test = logreg.predict(x_test)
     preds_train = logreg.predict(x_train)
@@ -350,19 +345,18 @@ def retrain_all_linear_layers(
     for param in model.parameters():
         param.requires_grad = False
 
-    #for name, module in model.named_modules():
+    # for name, module in model.named_modules():
     #    if "mlp" in name and isinstance(module, torch.nn.Linear):
     #        for param in module.parameters():
     #            param.requires_grad = True
 
-    #for name, module in model.named_modules():
+    # for name, module in model.named_modules():
     #    if "encoder.ln" in name and isinstance(module, torch.nn.LayerNorm):
     #        for param in module.parameters():
     #            param.requires_grad = True
 
     for param in model.heads.head.parameters():
         param.requires_grad = True
-
 
     optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=learning_rate)
 
@@ -410,9 +404,7 @@ def retrain_all_linear_layers(
         avg_loss = epoch_loss / n
         print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.4f}")
 
-
     return model
-
 
 
 def evaluate_model(model, train_loader, test_loader):
@@ -471,33 +463,58 @@ def evaluate_model(model, train_loader, test_loader):
 
 
 ## Load data
-target_resolution = (224, 224)
-train_transform = get_transform_cub(target_resolution=target_resolution,
-                                    train=True, augment_data=False)
-test_transform = get_transform_cub(target_resolution=target_resolution,
-                                   train=False, augment_data=False)
+if args.dataset == 'waterbird':
+    target_resolution = (224, 224)
+    train_transform = get_transform_cub(target_resolution=target_resolution,
+                                        train=True, augment_data=False)
+    test_transform = get_transform_cub(target_resolution=target_resolution,
+                                       train=False, augment_data=False)
 
-trainset = WaterBirdsDataset(
-    basedir=args.data_dir, split="train", transform=train_transform)
-testset = WaterBirdsDataset(
-    basedir=args.data_dir, split="test", transform=test_transform)
-valset = WaterBirdsDataset(
-    basedir=args.data_dir, split="val", transform=test_transform)
+    trainset = WaterBirdsDataset(
+        basedir=args.data_dir, split="train", transform=train_transform)
+    testset = WaterBirdsDataset(
+        basedir=args.data_dir, split="test", transform=test_transform)
+    valset = WaterBirdsDataset(
+        basedir=args.data_dir, split="val", transform=test_transform)
 
-loader_kwargs = {'batch_size': args.batch_size,
-                 'num_workers': 4, 'pin_memory': True,
-                 "reweight_places": None}
-train_loader = get_loader(
-    trainset, train=True, reweight_groups=False, reweight_classes=False,
-    **loader_kwargs)
-test_loader = get_loader(
-    testset, train=False, reweight_groups=None, reweight_classes=None,
-    **loader_kwargs)
-val_loader = get_loader(
-    valset, train=False, reweight_groups=None, reweight_classes=None,
-    **loader_kwargs)
+    loader_kwargs = {'batch_size': args.batch_size,
+                     'num_workers': 4, 'pin_memory': True,
+                     "reweight_places": None}
+    train_loader = get_loader(
+        trainset, train=True, reweight_groups=False, reweight_classes=False,
+        **loader_kwargs)
+    test_loader = get_loader(
+        testset, train=False, reweight_groups=None, reweight_classes=None,
+        **loader_kwargs)
+    val_loader = get_loader(
+        valset, train=False, reweight_groups=None, reweight_classes=None,
+        **loader_kwargs)
 
+if args.dataset == 'isic':
+    train_transform = torchvision.transforms.Compose([
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    test_transform = torchvision.transforms.Compose([
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
 
+    # Load datasets
+    trainset = isic_data.ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=train_transform,
+                                     split="train")
+    testset = isic_data.ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform,
+                                    split="test")
+    valset = isic_data.ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform,
+                                   split="val")
+
+    loader_kwargs = {'batch_size': args.batch_size, 'num_workers': 4, 'pin_memory': True}
+    train_loader = torch.utils.data.DataLoader(trainset, shuffle=True, **loader_kwargs)
+    test_loader = torch.utils.data.DataLoader(testset, shuffle=False, **loader_kwargs)
+    val_loader = torch.utils.data.DataLoader(valset, shuffle=False, **loader_kwargs)
+
+if args.dataset != 'waterbird' and args.dataset != 'isic':
+    raise Exception('Which dataset? Must be waterbird or isic')
 
 if args.model_type == "resnet50":
     # Evaluate model
@@ -514,7 +531,6 @@ if args.model_type == "resnet50":
     model.cuda()
     model.eval()
 
-
     print("Base Model")
     base_model_results = {}
     get_yp_func = partial(get_y_p, n_places=trainset.n_places)
@@ -525,6 +541,7 @@ if args.model_type == "resnet50":
     print()
 
     model.eval()
+
 
     # Extract embeddings
     def get_embed(m, x):
@@ -541,7 +558,6 @@ if args.model_type == "resnet50":
         x = m.avgpool(x)
         x = torch.flatten(x, 1)
         return x
-
 
 if args.model_type == "vit_b_16":
     print("Model: Vit-B_16")
@@ -590,10 +606,9 @@ if args.model_type == "vit_b_16":
         if hasattr(m, 'norm'):
             x = m.norm(x)[:, 0]
         else:
-            x = x[:,0]
+            x = x[:, 0]
         x = x.view(x.size(0), -1)
         return x
-
 
 all_embeddings = {}
 all_y, all_p, all_g = {}, {}, {}
@@ -602,7 +617,6 @@ for name, loader in [("train", train_loader), ("test", test_loader), ("val", val
     all_y[name], all_p[name], all_g[name] = [], [], []
     for x, y, g, p in tqdm.tqdm(loader):
         with torch.no_grad():
-
             all_embeddings[name].append(get_embed(model, x.cuda()).detach().cpu().numpy())
             all_y[name].append(y.detach().cpu().numpy())
             all_g[name].append(g.detach().cpu().numpy())
@@ -611,8 +625,6 @@ for name, loader in [("train", train_loader), ("test", test_loader), ("val", val
     all_y[name] = np.concatenate(all_y[name])
     all_g[name] = np.concatenate(all_g[name])
     all_p[name] = np.concatenate(all_p[name])
-
-
 
 # DFR on all linear layers
 print("DFR on all linear layers")
@@ -635,15 +647,12 @@ retrain_train_results["train_accs"] = train_accs
 retrain_train_results["test_worst_acc"] = np.min(test_accs)
 retrain_train_results["test_mean_acc"] = test_mean_acc
 
-
 torch.save(model.state_dict(), args.DFR_retrained_model_path)
-
 
 # Print the results
 print("Retrain Results:")
 print(retrain_train_results)
 print()
-
 
 # DFR on validation
 print("DFR on validation")
@@ -654,7 +663,7 @@ c, w1, w2 = dfr_on_validation_tune(
 dfr_val_results["best_hypers"] = (c, w1, w2)
 print("Hypers:", (c, w1, w2))
 test_accs, test_mean_acc, train_accs = dfr_on_validation_eval(
-        c, w1, w2, all_embeddings, all_y, all_g,
+    c, w1, w2, all_embeddings, all_y, all_g,
     balance_val=args.balance_dfr_val, add_train=not args.notrain_dfr_val)
 dfr_val_results["test_accs"] = test_accs
 dfr_val_results["train_accs"] = train_accs
@@ -672,7 +681,7 @@ c, w1, w2 = dfr_train_subset_tune(
 dfr_train_results["best_hypers"] = (c, w1, w2)
 print("Hypers:", (c, w1, w2))
 test_accs, test_mean_acc, train_accs = dfr_train_subset_eval(
-        c, w1, w2, all_embeddings, all_y, all_g)
+    c, w1, w2, all_embeddings, all_y, all_g)
 dfr_train_results["test_accs"] = test_accs
 dfr_train_results["train_accs"] = train_accs
 dfr_train_results["test_worst_acc"] = np.min(test_accs)
@@ -680,14 +689,11 @@ dfr_train_results["test_mean_acc"] = test_mean_acc
 print(dfr_train_results)
 print()
 
-
-
 all_results = {}
 all_results["base_model_results"] = base_model_results
 all_results["dfr_val_results"] = dfr_val_results
 all_results["dfr_train_results"] = dfr_train_results
 print(all_results)
-
 
 with open(args.result_path, 'wb') as f:
     pickle.dump(all_results, f)

@@ -28,7 +28,7 @@ from external.transformer_explainability.baselines.ViT.ViT_explanation_generator
 
 
 
-checkpoint = torch.load("logs/vit_waterbirds.pth", map_location=torch.device('cpu'), weights_only=False)
+checkpoint = torch.load("logs/dfr_model.pth", map_location=torch.device('cpu'), weights_only=False)
 model2 = vit_LRP(pretrained=True, num_classes=2)
 
 new_checkpoint = {}
@@ -94,7 +94,7 @@ def generate_visualization(original_image, class_index=None):
     vis = cv2.cvtColor(np.array(vis), cv2.COLOR_RGB2BGR)
     return vis
 
-img = tensorize('notebooks/data/001.Black_footed_Albatross/Black_Footed_Albatross_0001_796111.jpg').cuda()
+img = tensorize('notebooks/data/054.Blue_Grosbeak/Blue_Grosbeak_0015_36985.jpg').cuda()
 img2 = tensorize('notebooks/data/054.Blue_Grosbeak/Blue_Grosbeak_0004_14988.jpg').cuda()
 img3 = tensorize('notebooks/data/136.Barn_Swallow/Barn_Swallow_0014_130403.jpg').cuda()
 print(img.shape)
@@ -110,12 +110,12 @@ output_dir = "logs"
 os.makedirs(output_dir, exist_ok=True)
 
 # Generate visualization for the class predicted by the model (e.g., 'cat')
-cat = generate_visualization(img3)
+cat = generate_visualization(img)
 cat_output_path = os.path.join(output_dir, "cat_visualization.png")
 cv2.imwrite(cat_output_path, cat)
 
 # Generate visualization for class index 1 (e.g., 'dog')
-dog = generate_visualization(img3, class_index=1)
+dog = generate_visualization(img, class_index=1)
 dog_output_path = os.path.join(output_dir, "dog_visualization.png")
 cv2.imwrite(dog_output_path, dog)
 
