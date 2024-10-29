@@ -7,11 +7,11 @@ DFR_retrained = .pth of new model with last layer retraining
 DFR_logreg = .pth of logreg model (only last layer)
 
 
-**Train ISIC ViT**
+**Train ISIC ViT** \
 python train_classifier_isic.py --data_dir "/scratch_shared/primmere/isic/isic_224/raw_224" --output_dir "/home/primmere/logs/isic_logs" --eval_freq 2 --seed 7 --label_csv "/scratch_shared/primmere/isic/metadata.csv" --num_epochs 2
 
 These files are in external/dfr/
 
 
-**Transformer Visualisation**
+**Transformer Visualisation** \
 python dfr_transformer_explainability.py --img_path catdog.png --chkpt_path ../dfr/logs/dfr_model.pth --output_dir visualisations --output_filename_prefix test
