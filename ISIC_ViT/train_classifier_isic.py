@@ -9,7 +9,6 @@ import os
 import tqdm
 import argparse
 import sys
-from collections import defaultdict
 import json
 from functools import partial
 
@@ -20,7 +19,7 @@ project_root = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.append(project_root)
 
 from isic_data import ISICDataset
-from utils import Logger, AverageMeter, set_seed, evaluate, get_results, write_dict_to_tb, get_y_p
+from external.dfr.utils import Logger, AverageMeter, set_seed, evaluate, write_dict_to_tb, get_y_p
 
 parser = argparse.ArgumentParser(description="Train Vision Transformer on ISIC dataset")
 parser.add_argument("--data_dir", type=str, default=None, help="Dataset directory")
