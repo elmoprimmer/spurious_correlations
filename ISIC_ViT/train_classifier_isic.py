@@ -34,6 +34,8 @@ parser.add_argument("--init_lr", type=float, default=1e-4)
 parser.add_argument("--eval_freq", type=int, default=1)
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("--resume", type=str, default=None, help="Resume training from checkpoint")
+parser.add_argument("--pre_split", type=bool, default=False, help="If false, use sklearn to split, if true, use split "
+                                                                  "column in csv")
 
 args = parser.parse_args()
 
@@ -63,9 +65,21 @@ test_transform = torchvision.transforms.Compose([
 ])
 
 # Load datasets
-trainset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=train_transform, split="train")
-testset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform, split="test")
-valset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform, split="val")
+trainset = ISICDataset(basedir=args.data_dir,
+                       csv_file=args.label_csv,
+                       transform=train_transform,
+                       split="train",
+                       pre_split=args.pre_split)
+testset = ISICDataset(basedir=args.data_dir,
+                      csv_file=args.label_csv,
+                      transform=test_transform,
+                      split="test",
+                      pre_split=args.pre_split)
+valset = ISICDataset(basedir=args.data_dir,
+                     csv_file=args.label_csv,
+                     transform=test_transform,
+                     split="val",
+                     pre_split=args.pre_split)
 
 
 loader_kwargs = {'batch_size': args.batch_size, 'num_workers': 4, 'pin_memory': True}

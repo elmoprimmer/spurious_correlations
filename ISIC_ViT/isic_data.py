@@ -10,57 +10,64 @@ from sklearn.model_selection import train_test_split
 
 
 class ISICDataset(Dataset):
-    def __init__(self, basedir, csv_file, transform=None, split="train", test_size=0.2, val_size=0.1, seed=42):
+    def __init__(self, basedir, csv_file, transform=None, split="train", test_size=0.2, val_size=0.1, seed=42,
+                 pre_split=False):
         self.basedir = basedir
         self.transform = transform
         self.metadata = pd.read_csv(csv_file)
 
+        split_mapping = {"train": 0, "val": 1, "test": 2}
+        split_value = split_mapping.get(split)
+
+        # Combine the benign_malignant and patches columns to create stratified groups if needed
         self.metadata['combined_group'] = self.metadata['benign_malignant'] * 2 + self.metadata['patches']
 
-
-        train_data, test_data = train_test_split(
-            self.metadata,
-            test_size=test_size,
-            random_state=seed,
-            stratify=self.metadata['combined_group']
-        )
-        train_data, val_data = train_test_split(
-            train_data,
-            test_size=val_size/(1-test_size),
-            random_state=seed,
-            stratify=train_data['combined_group']
-        )
-
-        if split == "train":
-            self.metadata = train_data
-        elif split == "test":
-            self.metadata = test_data
-        elif split == "val":
-            self.metadata = val_data
+        if pre_split:
+            # Use pre-defined split column for data partitioning
+            self.metadata = self.metadata[self.metadata['split'] == split_value]
         else:
-            raise ValueError(f"Invalid split {split}")
+            # Perform train/val/test split based on given ratios
+            train_data, test_data = train_test_split(
+                self.metadata,
+                test_size=test_size,
+                random_state=seed,
+                stratify=self.metadata['combined_group']
+            )
+            train_data, val_data = train_test_split(
+                train_data,
+                test_size=val_size / (1 - test_size),
+                random_state=seed,
+                stratify=train_data['combined_group']
+            )
 
+            if split == "train":
+                self.metadata = train_data
+            elif split == "test":
+                self.metadata = test_data
+            elif split == "val":
+                self.metadata = val_data
+            else:
+                raise ValueError(f"Invalid split {split}")
+
+        # Define the arrays for labels and metadata
         self.y_array = self.metadata['benign_malignant'].values
         self.p_array = self.metadata['patches'].values
         self.filename_array = self.metadata['isic_id'].values
 
         self.n_classes = np.unique(self.y_array).size
         self.n_secondary_classes = np.unique(self.p_array).size
-        self.n_places = self.n_secondary_classes #this is for compatibility with dfr_evaluate_spurious.py
+        self.n_places = self.n_secondary_classes  # For compatibility with dfr_evaluate_spurious.py
 
         self.group_array = (self.y_array * self.n_secondary_classes + self.p_array).astype('int')
+        self.n_groups = self.n_classes * self.n_secondary_classes
 
-        self.n_groups = self.n_classes*self.n_secondary_classes
-
+        # Count occurrences for each group, class, and secondary class
         self.group_counts = (
                 torch.arange(self.n_groups).unsqueeze(1) == torch.from_numpy(self.group_array)).sum(1).float()
         self.y_counts = (
                 torch.arange(self.n_classes).unsqueeze(1) == torch.from_numpy(self.y_array)).sum(1).float()
         self.p_counts = (
                 torch.arange(self.n_secondary_classes).unsqueeze(1) == torch.from_numpy(self.p_array)).sum(1).float()
-
-
-
 
     def __len__(self):
         return len(self.metadata)
@@ -77,5 +84,3 @@ class ISICDataset(Dataset):
             img = self.transform(img)
 
         return img, y, g, p
-
-

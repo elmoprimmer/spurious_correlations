@@ -13,8 +13,16 @@ import pickle
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from torchvision.models import vit_b_16
+import os
+import sys
+external_repo_path = os.path.abspath('../../')
 
-from ISIC_ViT import isic_data
+if external_repo_path not in sys.path:
+    sys.path.append(external_repo_path)
+
+print("Sys Path:", sys.path)
+
+from ISIC_ViT.isic_data import ISICDataset
 from wb_data import WaterBirdsDataset, get_loader, get_transform_cub
 
 from utils import set_seed, evaluate, get_y_p
@@ -497,11 +505,11 @@ if args.dataset == 'isic':
     ])
 
     # Load datasets
-    trainset = isic_data.ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=train_transform,
+    trainset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=train_transform,
                                      split="train")
-    testset = isic_data.ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform,
+    testset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform,
                                     split="test")
-    valset = isic_data.ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform,
+    valset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform,
                                    split="val")
 
     loader_kwargs = {'batch_size': args.batch_size, 'num_workers': 4, 'pin_memory': True}
