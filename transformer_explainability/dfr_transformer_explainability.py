@@ -106,27 +106,20 @@ def generate_visualization(original_image, class_index=None):
 
 img = tensorize(args.img_path).cuda()
 
-out = model(img.unsqueeze(0))
-print(out)
-
-
 os.makedirs(args.output_dir, exist_ok=True)
 
+img_name = os.path.basename(args.img_path).split('.')[0]
 # Generate visualization for the class predicted by the model (e.g., 'land')
 cat = generate_visualization(img, class_index=0)
-land_filename = "land.png"
-if args.output_filename_prefix is not None:
-    land_filename = args.output_filename_prefix + "land.png"
+land_filename = img_name + "_0.png"
 cat_output_path = os.path.join(args.output_dir, land_filename)
 cv2.imwrite(cat_output_path, cat)
 
 # Generate visualization for class index 1 (e.g., 'water')
 dog = generate_visualization(img, class_index=1)
-water_filename = "water.png"
-if args.output_filename_prefix is not None:
-    water_filename = args.output_filename_prefix + "water.png"
+water_filename = img_name + "_1.png"
 dog_output_path = os.path.join(args.output_dir, water_filename)
 cv2.imwrite(dog_output_path, dog)
 
-print(f"Visualization for 'land' saved at: {cat_output_path}")  # cat = predicted class
-print(f"Visualization for 'water' saved at: {dog_output_path}")  # dog = given class
+print(f"Visualization for '0' saved at: {cat_output_path}")  # cat
+print(f"Visualization for '1' saved at: {dog_output_path}")  # dog
