@@ -29,6 +29,12 @@ python dfr_evaluate_spurious.py \
 - *DFR_logreg:* `.pth` file for the logistic regression model (only the last layer).
 
 ---
+## **LOST**
+
+---
+## **Norms**
+
+---
 
 ## **Training an ISIC ViT**
 To train a Vision Transformer on the ISIC dataset:
@@ -72,6 +78,12 @@ python dfr_transformer_explainability.py \
   --chkpt_path /home/primmere/logs/isic_logs_3/vit_isic_final_checkpoint_test.pt \
   --output_dir /home/primmere/outputs/isic_visualisations \
   --img_path /scratch_shared/primmere/isic/isic_224/raw_224_with_selected/ISIC_0055226.jpg
+```
+
+---
+## **Pruning by explaining**
+```bash
+python global_pruning.py --configs_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/external/pruning_by_explaining/configs/test-config.yaml --output_path /home/primmere/results --dataset_path /hpc_shared/primmere/imagenet/ILSVRC/Data/CLS-LOC
 ```
 
 ---
