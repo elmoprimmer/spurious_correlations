@@ -19,8 +19,23 @@ python dfr_evaluate_spurious.py \
   --seed 7 \
   --DFR_retrained_model_path /home/primmere/logs/isic_logs_2/dfr_isic_model.pth \
   --DFR_logreg_path /home/primmere/logs/isic_logs_2/dfr_isic_logreg_2.pth \
-  --label_csv /scratch_shared/primmere/isic/metadata_w_split.csv \
+  --label_csv /scratch_shared/primmere/isic/metadata_w_split_v2.csv \
   --dataset "isic"
+```
+
+```bash
+python dfr_evaluate_spurious.py \
+  --data_dir /scratch_shared/primmere/waterbird \
+  --result_path /home/primmere/logs/result_wb_0502.pkl \
+  --ckpt_path /home/primmere/logs/ \
+  --skip_dfr_train_subset_tune True \
+  --model_type "vit_b_16" \
+  --batch_size 32 \
+  --seed 7 \
+  --DFR_retrained_model_path /home/primmere/logs/dfr_wb_0502_model.pth \
+  --DFR_logreg_path /home/primmere/logs/dfr_wb_0502_logreg_2.pth \
+  --label_csv /scratch_shared/primmere/waterbird/metadata.csv \
+  --dataset "waterbird"
 ```
 
 #### **Outputs**
@@ -45,7 +60,7 @@ python train_classifier_isic.py \
   --output_dir "/home/primmere/logs/isic_logs" \
   --eval_freq 10 \
   --seed 7 \
-  --label_csv "/scratch_shared/primmere/isic/metadata.csv" \
+  --label_csv "/scratch_shared/primmere/isic/metadata_w_split_v2.csv" \
   --num_epochs 200 \
   --pre_split True
 ```
@@ -86,6 +101,14 @@ python dfr_transformer_explainability.py \
 python global_pruning.py --configs_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/external/pruning_by_explaining/configs/test-config.yaml --output_path /home/primmere/results --dataset_path /hpc_shared/primmere/imagenet/ILSVRC/Data/CLS-LOC
 ```
 
+```
+PYTHONPATH=/home/primmere/deep_feature_reweighting/deep_feature_reweighting/external/pruning_by_explaining python my_experiments/my_global_pruning.py     --configs_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/external/pruning_by_explaining/my_configs/test-config_waterbird.yaml     --output_path /home/primmere/results     --dataset_path /scratch_shared/primmere/waterbird
+```
+I fucked up pxp/attribute.py line 518 :)
+also accuracy.py line 23
+also models/vit.py
+also utils.pyx
+
 ---
 
 ## **Extras**
@@ -97,4 +120,16 @@ C:/Users/elmop/deep_feature_reweighting/deep_feature_reweighting/ISIC_ViT/
 
 scp -P 223 -r primmere@marc3a.hrz.uni-marburg.de:/home/primmere/logs/isic_logs_3/vit_isic_final_checkpoint_test.pt \
 C:/Users/elmop/deep_feature_reweighting/deep_feature_reweighting/ISIC_ViT/
+```
+
+Test accuracy of given group
+```bash
+python test_accuracy_w_groups.py --model_path /home/primmere/logs/isic_logs_4/vit_isic_v2.pt --data_dir /scratch_shared/primmere/isic/isic_224/raw_224_with_selected --metadata_csv /scratch_shared/primmere/isic/metadata_w_split_v2.csv --split "test" --num_workers 8 --batch_size 128
+python test_accuracy_w_groups.py --model_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/dfr/logs/vit_waterbirds.pth --data_dir /scratch_shared/primmere/waterbird --split "test" --num_workers 8 --batch_size 128
+```
+
+Test neuron gradient norms of given group
+```bash
+python test_gradient_norms_w_groups.py --model_path /home/primmere/logs/isic_logs_4/vit_isic_v2.pt --data_dir /scratch_shared/primmere/isic/isic_224/raw_224_with_selected --metadata_csv /scratch_shared/primmere/isic/metadata_w_split_v2.csv --split "test" --num_workers 8 --batch_size 128 --group 0
+python test_gradient_norms_w_groups.py --model_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/dfr/logs/vit_waterbirds.pth --data_dir /scratch_shared/primmere/waterbird --split "test" --num_workers 8 --batch_size 128 --group 0
 ```

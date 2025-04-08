@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=train_isic_vit_w_split_2         # Job name
+#SBATCH --job-name=train_isic_vit_w_split_v2         # Job name
 #SBATCH --partition=owner_fb12
 #SBATCH --output=/home/primmere/logs/train_isic_%j.out  # Standard output path
 #SBATCH --error=/home/primmere/logs/train_isic_%j.err   # Error output path
@@ -17,10 +17,10 @@ conda activate dfr2
 
 python train_classifier_isic.py \
   --data_dir "/scratch_shared/primmere/isic/isic_224/raw_224_with_selected" \
-  --output_dir "/home/primmere/logs/isic_logs_3" \
+  --output_dir "/home/primmere/logs/isic_logs_4" \
   --eval_freq 10 \
   --seed 7 \
-  --label_csv "/scratch_shared/primmere/isic/metadata_w_split.csv" \
-  --num_epochs 100 \
-  --batch_size 64 \
+  --label_csv "/scratch_shared/primmere/isic/metadata_w_split_v2.csv" \
+  --num_epochs 200 \
+  --batch_size 32 \
   --pre_split True

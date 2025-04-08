@@ -505,10 +505,13 @@ if args.dataset == 'isic':
     ])
 
     # Load datasets
+    print("train")
     trainset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=train_transform,
                                      split="train")
+    print("test")
     testset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform,
                                     split="test")
+    print("val")
     valset = ISICDataset(basedir=args.data_dir, csv_file=args.label_csv, transform=test_transform,
                                    split="val")
 
@@ -584,6 +587,7 @@ if args.model_type == "vit_b_16":
     base_model_results["test"] = evaluate(model, test_loader, get_yp_func)
     base_model_results["val"] = evaluate(model, val_loader, get_yp_func)
     base_model_results["train"] = evaluate(model, train_loader, get_yp_func)
+
     print(base_model_results)
     print()
 

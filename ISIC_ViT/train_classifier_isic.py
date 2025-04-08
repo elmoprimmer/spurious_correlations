@@ -34,7 +34,7 @@ parser.add_argument("--init_lr", type=float, default=1e-4)
 parser.add_argument("--eval_freq", type=int, default=1)
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("--resume", type=str, default=None, help="Resume training from checkpoint")
-parser.add_argument("--pre_split", type=bool, default=False, help="If false, use sklearn to split, if true, use split "
+parser.add_argument("--pre_split", type=bool, default=True, help="If false, use sklearn to split, if true, use split "
                                                                   "column in csv")
 
 args = parser.parse_args()
@@ -116,9 +116,23 @@ else:
 criterion = torch.nn.CrossEntropyLoss()
 
 logger.flush()
+start_epoch = 0
+
+if args.resume:
+    checkpoint_path = args.resume
+    if os.path.isfile(checkpoint_path):
+        checkpoint = torch.load(checkpoint_path)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        start_epoch = checkpoint['epoch'] + 1
+        logger.write(f"Resumed training from checkpoint: {checkpoint_path}, starting at epoch {start_epoch}")
+    else:
+        logger.write(f"Checkpoint not found at {checkpoint_path}, starting fresh.")
+
+
 
 # training loop
-for epoch in range(args.num_epochs):
+for epoch in range(start_epoch, args.num_epochs):
     model.train()
     loss_meter = AverageMeter()
 
@@ -146,13 +160,17 @@ for epoch in range(args.num_epochs):
         logger.write(f"Test results at epoch {epoch}: {test_results}\n")
         write_dict_to_tb(writer, test_results, "test/", epoch)
 
-    # Save checkpoint
-    torch.save(model.state_dict(), os.path.join(args.output_dir, f"checkpoint_epoch_{epoch}.pt"))
+        # Save checkpoint
+        torch.save({
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+        }, os.path.join(args.output_dir, f"checkpoint_epoch_{epoch}.pt"))
 
 val_results = evaluate(model, val_loader, get_yp_func)
 test_results = evaluate(model, test_loader, get_yp_func)
 logger.write(f"Validation results at end: {val_results}")
-torch.save(model.state_dict(), os.path.join(args.output_dir, 'vit_isic_final_checkpoint_test.pt'))
+torch.save(model.state_dict(), os.path.join(args.output_dir, 'vit_isic_v2.pt'))
 logger.write('\n')
 
 all_results = {}
