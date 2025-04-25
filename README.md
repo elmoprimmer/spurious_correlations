@@ -125,11 +125,15 @@ C:/Users/elmop/deep_feature_reweighting/deep_feature_reweighting/ISIC_ViT/
 Test accuracy of given group
 ```bash
 python test_accuracy_w_groups.py --model_path /home/primmere/logs/isic_logs_4/vit_isic_v2.pt --data_dir /scratch_shared/primmere/isic/isic_224/raw_224_with_selected --metadata_csv /scratch_shared/primmere/isic/metadata_w_split_v2.csv --split "test" --num_workers 8 --batch_size 128
-python test_accuracy_w_groups.py --model_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/dfr/logs/vit_waterbirds.pth --data_dir /scratch_shared/primmere/waterbird --split "test" --num_workers 8 --batch_size 128
+python test_accuracy_w_groups.py --model_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/dfr/logs/vit_waterbirds.pth --data_dir /scratch_shared/primmere/waterbird --split "test" --num_workers 8 --batch_size 128 --dataset "waterbirds"
 ```
 
 Test neuron gradient norms of given group
 ```bash
 python test_gradient_norms_w_groups.py --model_path /home/primmere/logs/isic_logs_4/vit_isic_v2.pt --data_dir /scratch_shared/primmere/isic/isic_224/raw_224_with_selected --metadata_csv /scratch_shared/primmere/isic/metadata_w_split_v2.csv --split "test" --num_workers 8 --batch_size 128 --group 0
-python test_gradient_norms_w_groups.py --model_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/dfr/logs/vit_waterbirds.pth --data_dir /scratch_shared/primmere/waterbird --split "test" --num_workers 8 --batch_size 128 --group 0
+python test_gradient_norms_w_groups.py --model_path /home/primmere/deep_feature_reweighting/deep_feature_reweighting/dfr/logs/vit_waterbirds.pth --data_dir /scratch_shared/primmere/waterbird --split "test" --num_workers 8 --batch_size 128 --dataset "waterbirds" --group 0
+```
+Neuron gradients and accuracy
+```bash
+python test_accuracy_w_groups.py --model_path /home/primmere/logs/isic_logs_4/vit_isic_v2.pt --data_dir /scratch_shared/primmere/isic/isic_224/raw_224_with_selected --metadata_csv /scratch_shared/primmere/isic/metadata_w_split_v2.csv --split "test" --num_workers 8 --batch_size 64 --gradient_norm_pruning True --n_groups 4 --n_prunable_neurons 3
 ```

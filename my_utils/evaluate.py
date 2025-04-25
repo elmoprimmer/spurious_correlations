@@ -1,10 +1,10 @@
 import torch
 import numpy as np
 from tqdm import tqdm
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 
 class AccuracyWithGroups(object):
-
     def __init__(self, n_groups=4):
         print("init")
         self.correct = None
@@ -14,6 +14,9 @@ class AccuracyWithGroups(object):
         self.n_groups = n_groups
         self.reset()
 
+        self.predictions = []
+        self.targets = []
+
     def reset(self):
         print("reset")
         self.correct = 0
@@ -21,6 +24,9 @@ class AccuracyWithGroups(object):
 
         self.correct_per_group = {g: 0 for g in range(self.n_groups)}
         self.total_per_group = {g: 0 for g in range(self.n_groups)}
+
+        self.predictions = []
+        self.targets = []
 
     @torch.no_grad()
     def update(self, outs, ys, groups):
@@ -38,6 +44,9 @@ class AccuracyWithGroups(object):
             self.correct_per_group[group] += group_correct
             self.total_per_group[group] += group_total
 
+        self.predictions.extend(preds.cpu().numpy())
+        self.targets.extend(ys.cpu().numpy())
+
     def compute(self):
         results = {
             "n_correct": self.correct,
@@ -50,6 +59,9 @@ class AccuracyWithGroups(object):
         for k, v in self.correct_per_group.items():
             total_k = self.total_per_group[k]
             results['groups_accuracy'][k] = v / total_k if total_k else 0
+
+        results["confusion_matrix"] = confusion_matrix(self.targets, self.predictions)
+
         return results
 
 

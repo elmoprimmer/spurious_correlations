@@ -83,4 +83,21 @@ model.to(device)
 metric = evaluate_gradients.AvgGradientByGroup(args.group)
 
 results = evaluate_gradients.evaluate(model, loader, metric, args.group, device)
-print(results)
+print("Group: ", results["group"])
+print("N: ", results["n_total"])
+top3 = []
+for k, v in results["gradients"].items():
+    if "head" in k:
+        continue
+    norms = v.cpu().numpy()
+    for idx, norm in enumerate(norms):
+        if len(top3) < 3:
+            top3.append((k, idx, norm))
+            top3.sort(key=lambda x: x[2], reverse=True)
+        else:
+            if norm > top3[-1][2]:
+                top3[-1] = (k, idx, norm)
+                top3.sort(key=lambda x: x[2], reverse=True)
+print("Top 3 neurons (layer, index, norm):")
+for layer, idx, norm in top3:
+    print(f"Layer: {layer}, Index: {idx}, Norm: {norm}", results["gradients"][layer].size())
