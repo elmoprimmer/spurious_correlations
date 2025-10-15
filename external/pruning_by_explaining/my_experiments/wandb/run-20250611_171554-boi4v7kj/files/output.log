@@ -1,0 +1,32 @@
+load the dataset
+waterbirds
+get train set
+[0 1 2 3]
+Number of unique labels: 2, Number of unique places: 2, Total groups: 4
+group 0: 3518
+group 1: 185
+group 2: 55
+group 3: 1037
+get valid set
+[0 1 2 3]
+Number of unique labels: 2, Number of unique places: 2, Total groups: 4
+group 0: 456
+group 1: 456
+group 2: 143
+group 3: 144
+no / wrong dataset
+0
+1
+2
+3
+pruning indices  160
+0
+1
+2
+3
+pruning indices (val) 1199
+Arch:vit_b_16
+pruning_rates
+[0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/torch/autograd/graph.py:768: UserWarning: Attempting to run cuBLAS, but there was no current CUDA context! Attempting to set the primary context... (Triggered internally at ../aten/src/ATen/cuda/CublasHandlePool.cpp:135.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass

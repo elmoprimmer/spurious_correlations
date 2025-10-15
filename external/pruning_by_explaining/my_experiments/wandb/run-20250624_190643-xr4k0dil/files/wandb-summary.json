@@ -1,0 +1,1 @@
+{"group accuracy (val)":{"0":0.45,"1":0.725,"2":0.55,"3":0.55},"_wandb":{"runtime":30},"group accuracy (train)":{"2":0.3,"1":0.6,"0":0.7,"3":0.8},"_runtime":30.959381237,"_step":6,"acc_top1 (val)":0.56875,"_timestamp":1.750784834395774e+09,"acc_top1 (train)":0.6,"top1_auc":0.17056249999999995,"pruning_rate":0.3}

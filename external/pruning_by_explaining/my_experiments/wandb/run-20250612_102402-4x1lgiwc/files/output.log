@@ -1,0 +1,72 @@
+load the dataset
+waterbirds
+get train set
+[0 1 2 3]
+Number of unique labels: 2, Number of unique places: 2, Total groups: 4
+group 0: 3518
+group 1: 185
+group 2: 55
+group 3: 1037
+get valid set
+[0 1 2 3]
+Number of unique labels: 2, Number of unique places: 2, Total groups: 4
+group 0: 456
+group 1: 456
+group 2: 143
+group 3: 144
+get test set
+[0 1 2 3]
+Number of unique labels: 2, Number of unique places: 2, Total groups: 4
+group 0: 2255
+group 1: 2255
+group 2: 642
+group 3: 642
+0
+1
+2
+3
+pruning indices  160
+0
+1
+2
+3
+pruning indices (val) 160
+Arch:vit_b_16
+pruning_rates
+[0, 0.1, 0.2, 0.3]
+Traceback (most recent call last):
+  File "/home/primmere/ide/external/pruning_by_explaining/my_experiments/my_global_pruning.py", line 315, in <module>
+    start()
+  File "/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/click/core.py", line 1157, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/click/core.py", line 1078, in main
+    rv = self.invoke(ctx)
+  File "/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/click/core.py", line 1434, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/click/core.py", line 783, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/primmere/ide/external/pruning_by_explaining/my_experiments/my_global_pruning.py", line 176, in start
+    component_attributor = ComponentAttibution(
+  File "/home/primmere/ide/external/pruning_by_explaining/pxp/attribute.py", line 463, in __init__
+    self.attributor = self.choose_attributor()
+  File "/home/primmere/ide/external/pruning_by_explaining/pxp/attribute.py", line 483, in choose_attributor
+    return attributor
+UnboundLocalError: local variable 'attributor' referenced before assignment
+Traceback (most recent call last):
+  File "/home/primmere/ide/external/pruning_by_explaining/my_experiments/my_global_pruning.py", line 315, in <module>
+    start()
+  File "/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/click/core.py", line 1157, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/click/core.py", line 1078, in main
+    rv = self.invoke(ctx)
+  File "/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/click/core.py", line 1434, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/click/core.py", line 783, in invoke
+    return __callback(*args, **kwargs)
+  File "/home/primmere/ide/external/pruning_by_explaining/my_experiments/my_global_pruning.py", line 176, in start
+    component_attributor = ComponentAttibution(
+  File "/home/primmere/ide/external/pruning_by_explaining/pxp/attribute.py", line 463, in __init__
+    self.attributor = self.choose_attributor()
+  File "/home/primmere/ide/external/pruning_by_explaining/pxp/attribute.py", line 483, in choose_attributor
+    return attributor
+UnboundLocalError: local variable 'attributor' referenced before assignment

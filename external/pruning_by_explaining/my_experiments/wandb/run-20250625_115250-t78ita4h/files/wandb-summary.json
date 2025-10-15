@@ -1,0 +1,1 @@
+{"pruning_rate":1,"group accuracy (train)":{"1":1,"0":1,"3":0,"2":0},"_timestamp":1.7508452203004034e+09,"acc_top1 (train)":0.5,"group accuracy (val)":{"0":1,"1":1,"2":0,"3":0},"acc_top1 (val)":0.5,"top1_auc":0.5399375,"_wandb":{"runtime":49},"_runtime":49.964400981,"_step":11}

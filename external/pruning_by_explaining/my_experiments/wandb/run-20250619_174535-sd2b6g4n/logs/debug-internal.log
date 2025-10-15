@@ -1,0 +1,19 @@
+{"time":"2025-06-19T17:45:35.794184716+02:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-06-19T17:45:35.794195696+02:00","level":"INFO","msg":"created symlink","path":"/home/primmere/ide/external/pruning_by_explaining/my_experiments/wandb/run-20250619_174535-sd2b6g4n/logs/debug-core.log"}
+{"time":"2025-06-19T17:45:35.901344056+02:00","level":"INFO","msg":"created new stream","id":"sd2b6g4n"}
+{"time":"2025-06-19T17:45:35.901372907+02:00","level":"INFO","msg":"stream: started","id":"sd2b6g4n"}
+{"time":"2025-06-19T17:45:35.901412618+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"sd2b6g4n"}
+{"time":"2025-06-19T17:45:35.901476399+02:00","level":"INFO","msg":"sender: started","stream_id":"sd2b6g4n"}
+{"time":"2025-06-19T17:45:35.90150882+02:00","level":"INFO","msg":"handler: started","stream_id":"sd2b6g4n"}
+{"time":"2025-06-19T17:45:36.342933547+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-06-19T17:50:31.898615082+02:00","level":"INFO","msg":"stream: closing","id":"sd2b6g4n"}
+{"time":"2025-06-19T17:50:31.898685573+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-06-19T17:50:31.899285515+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-06-19T17:50:32.065539366+02:00","level":"WARN","msg":"No job ingredients found, not creating job artifact"}
+{"time":"2025-06-19T17:50:32.065549706+02:00","level":"WARN","msg":"No source type found, not creating job artifact"}
+{"time":"2025-06-19T17:50:32.065553076+02:00","level":"INFO","msg":"sender: sendDefer: no job artifact to save"}
+{"time":"2025-06-19T17:50:32.600303767+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-06-19T17:50:32.781346922+02:00","level":"INFO","msg":"handler: closed","stream_id":"sd2b6g4n"}
+{"time":"2025-06-19T17:50:32.781366433+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"sd2b6g4n"}
+{"time":"2025-06-19T17:50:32.781381333+02:00","level":"INFO","msg":"sender: closed","stream_id":"sd2b6g4n"}
+{"time":"2025-06-19T17:50:32.781991975+02:00","level":"INFO","msg":"stream: closed","id":"sd2b6g4n"}

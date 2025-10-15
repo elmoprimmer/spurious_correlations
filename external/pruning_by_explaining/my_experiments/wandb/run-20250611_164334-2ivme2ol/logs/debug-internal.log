@@ -1,0 +1,19 @@
+{"time":"2025-06-11T16:43:34.75009248+02:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-06-11T16:43:34.75010768+02:00","level":"INFO","msg":"created symlink","path":"/home/primmere/ide/external/pruning_by_explaining/my_experiments/wandb/run-20250611_164334-2ivme2ol/logs/debug-core.log"}
+{"time":"2025-06-11T16:43:34.858595076+02:00","level":"INFO","msg":"created new stream","id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:34.858620446+02:00","level":"INFO","msg":"stream: started","id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:34.858664837+02:00","level":"INFO","msg":"handler: started","stream_id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:34.8589982+02:00","level":"INFO","msg":"sender: started","stream_id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:34.85900262+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:35.186930002+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-06-11T16:43:35.484225146+02:00","level":"INFO","msg":"stream: closing","id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:35.484250916+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-06-11T16:43:35.484667181+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-06-11T16:43:36.03934789+02:00","level":"WARN","msg":"No job ingredients found, not creating job artifact"}
+{"time":"2025-06-11T16:43:36.03936345+02:00","level":"WARN","msg":"No source type found, not creating job artifact"}
+{"time":"2025-06-11T16:43:36.03936845+02:00","level":"INFO","msg":"sender: sendDefer: no job artifact to save"}
+{"time":"2025-06-11T16:43:36.488720664+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-06-11T16:43:36.693262876+02:00","level":"INFO","msg":"handler: closed","stream_id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:36.693288276+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:36.693320276+02:00","level":"INFO","msg":"sender: closed","stream_id":"2ivme2ol"}
+{"time":"2025-06-11T16:43:36.69372884+02:00","level":"INFO","msg":"stream: closed","id":"2ivme2ol"}

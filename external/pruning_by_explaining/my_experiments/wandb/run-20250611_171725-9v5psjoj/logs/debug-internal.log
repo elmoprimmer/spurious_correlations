@@ -1,0 +1,19 @@
+{"time":"2025-06-11T17:17:25.600207736+02:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-06-11T17:17:25.600222137+02:00","level":"INFO","msg":"created symlink","path":"/home/primmere/ide/external/pruning_by_explaining/my_experiments/wandb/run-20250611_171725-9v5psjoj/logs/debug-core.log"}
+{"time":"2025-06-11T17:17:25.709515746+02:00","level":"INFO","msg":"created new stream","id":"9v5psjoj"}
+{"time":"2025-06-11T17:17:25.709544977+02:00","level":"INFO","msg":"stream: started","id":"9v5psjoj"}
+{"time":"2025-06-11T17:17:25.709593317+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"9v5psjoj"}
+{"time":"2025-06-11T17:17:25.709607487+02:00","level":"INFO","msg":"handler: started","stream_id":"9v5psjoj"}
+{"time":"2025-06-11T17:17:25.709617867+02:00","level":"INFO","msg":"sender: started","stream_id":"9v5psjoj"}
+{"time":"2025-06-11T17:17:26.089237698+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-06-11T17:19:28.848457992+02:00","level":"INFO","msg":"stream: closing","id":"9v5psjoj"}
+{"time":"2025-06-11T17:19:28.848487512+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-06-11T17:19:28.849038599+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-06-11T17:19:29.058427573+02:00","level":"WARN","msg":"No job ingredients found, not creating job artifact"}
+{"time":"2025-06-11T17:19:29.058448753+02:00","level":"WARN","msg":"No source type found, not creating job artifact"}
+{"time":"2025-06-11T17:19:29.058457663+02:00","level":"INFO","msg":"sender: sendDefer: no job artifact to save"}
+{"time":"2025-06-11T17:19:29.511966928+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-06-11T17:19:29.839306101+02:00","level":"INFO","msg":"handler: closed","stream_id":"9v5psjoj"}
+{"time":"2025-06-11T17:19:29.839346212+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"9v5psjoj"}
+{"time":"2025-06-11T17:19:29.839362872+02:00","level":"INFO","msg":"sender: closed","stream_id":"9v5psjoj"}
+{"time":"2025-06-11T17:19:29.84002352+02:00","level":"INFO","msg":"stream: closed","id":"9v5psjoj"}

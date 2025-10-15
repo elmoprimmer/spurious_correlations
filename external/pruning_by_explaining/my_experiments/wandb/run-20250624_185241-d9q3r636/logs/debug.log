@@ -1,0 +1,27 @@
+2025-06-24 18:52:41,469 INFO    MainThread:3902 [wandb_setup.py:_flush():79] Current SDK version is 0.18.7
+2025-06-24 18:52:41,469 INFO    MainThread:3902 [wandb_setup.py:_flush():79] Configure stats pid to 3902
+2025-06-24 18:52:41,469 INFO    MainThread:3902 [wandb_setup.py:_flush():79] Loading settings from /home/primmere/.config/wandb/settings
+2025-06-24 18:52:41,469 INFO    MainThread:3902 [wandb_setup.py:_flush():79] Loading settings from /home/primmere/ide/external/pruning_by_explaining/my_experiments/wandb/settings
+2025-06-24 18:52:41,469 INFO    MainThread:3902 [wandb_setup.py:_flush():79] Loading settings from environment variables: {'api_key': '***REDACTED***'}
+2025-06-24 18:52:41,469 INFO    MainThread:3902 [wandb_setup.py:_flush():79] Applying setup settings: {'mode': None, '_disable_service': None}
+2025-06-24 18:52:41,469 INFO    MainThread:3902 [wandb_setup.py:_flush():79] Inferring run settings from compute environment: {'program_relpath': 'my_global_pruning.py', 'program_abspath': '/home/primmere/ide/external/pruning_by_explaining/my_experiments/my_global_pruning.py', 'program': '/home/primmere/ide/external/pruning_by_explaining/my_experiments/my_global_pruning.py'}
+2025-06-24 18:52:41,469 INFO    MainThread:3902 [wandb_setup.py:_flush():79] Applying login settings: {}
+2025-06-24 18:52:41,470 INFO    MainThread:3902 [wandb_init.py:_log_setup():533] Logging user logs to /home/primmere/ide/external/pruning_by_explaining/my_experiments/wandb/run-20250624_185241-d9q3r636/logs/debug.log
+2025-06-24 18:52:41,470 INFO    MainThread:3902 [wandb_init.py:_log_setup():534] Logging internal logs to /home/primmere/ide/external/pruning_by_explaining/my_experiments/wandb/run-20250624_185241-d9q3r636/logs/debug-internal.log
+2025-06-24 18:52:41,470 INFO    MainThread:3902 [wandb_init.py:init():619] calling init triggers
+2025-06-24 18:52:41,470 INFO    MainThread:3902 [wandb_init.py:init():626] wandb.init called with sweep_config: {}
+config: {}
+2025-06-24 18:52:41,470 INFO    MainThread:3902 [wandb_init.py:init():669] starting backend
+2025-06-24 18:52:41,470 INFO    MainThread:3902 [wandb_init.py:init():673] sending inform_init request
+2025-06-24 18:52:41,470 INFO    MainThread:3902 [backend.py:_multiprocessing_setup():104] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-06-24 18:52:41,471 INFO    MainThread:3902 [wandb_init.py:init():686] backend started and connected
+2025-06-24 18:52:41,472 INFO    MainThread:3902 [wandb_init.py:init():781] updated telemetry
+2025-06-24 18:52:41,472 INFO    MainThread:3902 [wandb_init.py:init():814] communicating run to backend with 90.0 second timeout
+2025-06-24 18:52:41,871 INFO    MainThread:3902 [wandb_init.py:init():867] starting run threads in backend
+2025-06-24 18:52:42,106 INFO    MainThread:3902 [wandb_run.py:_console_start():2456] atexit reg
+2025-06-24 18:52:42,106 INFO    MainThread:3902 [wandb_run.py:_redirect():2305] redirect: wrap_raw
+2025-06-24 18:52:42,106 INFO    MainThread:3902 [wandb_run.py:_redirect():2370] Wrapping output streams.
+2025-06-24 18:52:42,106 INFO    MainThread:3902 [wandb_run.py:_redirect():2395] Redirects installed.
+2025-06-24 18:52:42,109 INFO    MainThread:3902 [wandb_init.py:init():911] run started, returning control to user process
+2025-06-24 18:52:42,109 INFO    MainThread:3902 [wandb_run.py:_config_callback():1387] config_cb None None {'random_seed': 0, 'mode': 'Relevance', 'init_relevance': 1, 'low_level_hidden_layer_rule': 'Epsilon', 'mid_level_hidden_layer_rule': 'Epsilon', 'high_level_hidden_layer_rule': 'Epsilon', 'fully_connected_layers_rule': 'Epsilon', 'softmax_rule': 'Epsilon', 'abs_sort': True, 'least_relevant_first': True, 'pruning_layer_type': 'Softmax', 'subsequent_layer_pruning': 'None', 'model_architecture': 'vit_b_16', 'checkpoint_path': None, 'metadata_path': '/scratch_shared/primmere/isic/metadata_w_split_v2_w_elmos_modifications.csv', 'domain_restriction_classes': 3, 'validation_dataloader_batchsize': 32, 'pruning_dataloader_batchsize': 4, 'reference_samples_per_class': 10, 'wandb': True, 'wandb_api_key': 'eb7cc596491b2b488bee66037dde6b9c7fb2a837', 'wandb_project_name': None, 'pruning_rates': [0, 0.01, 0.05, 0.1, 0.2, 0.3], 'output_path': '/home/primmere/logs/pxp/results/4/', 'dataset_path': '/scratch_shared/primmere/isic/isic_224/raw_224_with_selected', 'dataset_name': 'isic', 'results_file_name': 'accuracy_vit_b_16_Relevance_None_sortTrue_leastvalueTrue_0'}
+2025-06-24 18:52:42,146 WARNING MsgRouterThr:3902 [router.py:message_loop():75] message_loop has been closed

@@ -1,0 +1,120 @@
+load the dataset
+waterbirds
+get train set
+[0 1 2 3]
+Number of unique labels: 2, Number of unique places: 2, Total groups: 4
+group 0: 3518
+group 1: 185
+group 2: 55
+group 3: 1037
+get valid set
+[0 1 2 3]
+Number of unique labels: 2, Number of unique places: 2, Total groups: 4
+group 0: 456
+group 1: 456
+group 2: 143
+group 3: 144
+no / wrong dataset
+0
+1
+2
+3
+pruning indices  160
+0
+1
+2
+3
+pruning indices (val) 1199
+Arch:vit_b_16
+pruning_rates
+[0, 0.001, 0.005, 0.001, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3]
+/home/primmere/.conda/envs/dfr2/lib/python3.10/site-packages/torch/autograd/graph.py:768: UserWarning: Attempting to run cuBLAS, but there was no current CUDA context! Attempting to set the primary context... (Triggered internally at ../aten/src/ATen/cuda/CublasHandlePool.cpp:135.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+Initial accuracy: top1=0.7614678899082569
+Initial worst accuracy=0.4405594405594406
+Initial group accuracies={3: 0.5416666666666666, 2: 0.4405594405594406, 0: 0.875, 1: 0.8179824561403509}
+Processing 5% Pruning:  40%|████      | 4/10 [00:40<00:59,  9.99s/it]                      
+acc top1 train 0.7
+acc worst train 0.525
+worst groups train {0: 0.925, 1: 0.8, 2: 0.55, 3: 0.525}
+Accuracy-Flow list: [0.7614678899082569]
+Worst Accuracy-Flow list: [0.4405594405594406]
+Group accuracy: {3: 0.5416666666666666, 2: 0.4405594405594406, 0: 0.875, 1: 0.8179824561403509}
+Logged the results of 0% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/0.1.pth
+acc top1 train 0.7
+acc worst train 0.525
+worst groups train {1: 0.8, 2: 0.55, 0: 0.925, 3: 0.525}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406]
+Group accuracy: {3: 0.5416666666666666, 2: 0.4405594405594406, 0: 0.875, 1: 0.8179824561403509}
+Logged the results of 0.001% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/0.5.pth
+acc top1 train 0.7
+acc worst train 0.525
+worst groups train {1: 0.8, 2: 0.55, 0: 0.925, 3: 0.525}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569, 0.7614678899082569]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406, 0.4405594405594406]
+Group accuracy: {3: 0.5416666666666666, 2: 0.4405594405594406, 0: 0.875, 1: 0.8179824561403509}
+Logged the results of 0.005% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/0.1.pth
+acc top1 train 0.7
+acc worst train 0.525
+worst groups train {0: 0.925, 1: 0.8, 2: 0.55, 3: 0.525}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7614678899082569]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.4405594405594406]
+Group accuracy: {3: 0.5416666666666666, 2: 0.4405594405594406, 0: 0.875, 1: 0.8179824561403509}
+Logged the results of 0.001% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/5.0.pth
+acc top1 train 0.69375
+acc worst train 0.5
+worst groups train {3: 0.5, 0: 0.925, 2: 0.55, 1: 0.8}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7673060884070059]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.46853146853146854]
+Group accuracy: {3: 0.4930555555555556, 2: 0.46853146853146854, 0: 0.8771929824561403, 1: 0.8377192982456141}
+Logged the results of 0.05% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/10.0.pth
+acc top1 train 0.65
+acc worst train 0.4
+worst groups train {0: 0.925, 3: 0.4, 1: 0.825, 2: 0.45}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7673060884070059, 0.7597998331943286]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.46853146853146854, 0.3776223776223776]
+Group accuracy: {3: 0.4791666666666667, 2: 0.3776223776223776, 0: 0.8903508771929824, 1: 0.8377192982456141}
+Logged the results of 0.1% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/15.0.pth
+acc top1 train 0.66875
+acc worst train 0.375
+worst groups train {0: 0.95, 3: 0.375, 2: 0.45, 1: 0.9}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7673060884070059, 0.7597998331943286, 0.7606338615512928]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.46853146853146854, 0.3776223776223776, 0.34265734265734266]
+Group accuracy: {3: 0.4444444444444444, 2: 0.34265734265734266, 0: 0.8969298245614035, 1: 0.8552631578947368}
+Logged the results of 0.15% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/20.0.pth
+acc top1 train 0.6625
+acc worst train 0.375
+worst groups train {3: 0.375, 0: 0.95, 2: 0.45, 1: 0.875}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7673060884070059, 0.7597998331943286, 0.7606338615512928, 0.7606338615512928]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.46853146853146854, 0.3776223776223776, 0.34265734265734266, 0.32167832167832167]
+Group accuracy: {3: 0.4444444444444444, 2: 0.32167832167832167, 0: 0.8969298245614035, 1: 0.8618421052631579}
+Logged the results of 0.2% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/25.0.pth
+acc top1 train 0.65
+acc worst train 0.325
+worst groups train {3: 0.325, 2: 0.4, 0: 1.0, 1: 0.875}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7673060884070059, 0.7597998331943286, 0.7606338615512928, 0.7606338615512928, 0.7422852376980817]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.46853146853146854, 0.3776223776223776, 0.34265734265734266, 0.32167832167832167, 0.22377622377622378]
+Group accuracy: {3: 0.3888888888888889, 2: 0.22377622377622378, 0: 0.8969298245614035, 1: 0.8618421052631579}
+Logged the results of 0.25% Pruning Rate to wandb!
+/home/primmere/logs/pxp/results/30.0.pth
+acc top1 train 0.6
+acc worst train 0.4
+worst groups train {0: 0.825, 1: 0.775, 2: 0.4, 3: 0.4}
+Accuracy-Flow list: [0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7614678899082569, 0.7673060884070059, 0.7597998331943286, 0.7606338615512928, 0.7606338615512928, 0.7422852376980817, 0.6797331109257715]
+Worst Accuracy-Flow list: [0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.4405594405594406, 0.46853146853146854, 0.3776223776223776, 0.34265734265734266, 0.32167832167832167, 0.22377622377622378, 0.26573426573426573]
+Group accuracy: {3: 0.4166666666666667, 2: 0.26573426573426573, 0: 0.7960526315789473, 1: 0.7763157894736842}
+Logged the results of 0.3% Pruning Rate to wandb!
+/home/primmere/ide/external/pruning_by_explaining/my_experiments/my_global_pruning.py:304: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+  top1_auc = np.trapz(top1_acc_list, pruning_rates)
+Top1 AUC: 0.22556005004170143
+Logged the AUC of the Top1 Accuracy to wandb!
+Top1 AUC: 0.22556005004170143

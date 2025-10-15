@@ -1,0 +1,8 @@
+{"time":"2025-06-12T09:11:05.607983868+02:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-06-12T09:11:05.607995178+02:00","level":"INFO","msg":"created symlink","path":"/home/primmere/ide/external/pruning_by_explaining/my_experiments/wandb/run-20250612_091105-tw0jhulg/logs/debug-core.log"}
+{"time":"2025-06-12T09:11:05.815749463+02:00","level":"INFO","msg":"created new stream","id":"tw0jhulg"}
+{"time":"2025-06-12T09:11:05.815784714+02:00","level":"INFO","msg":"stream: started","id":"tw0jhulg"}
+{"time":"2025-06-12T09:11:05.815823895+02:00","level":"INFO","msg":"handler: started","stream_id":"tw0jhulg"}
+{"time":"2025-06-12T09:11:05.816361146+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"tw0jhulg"}
+{"time":"2025-06-12T09:11:05.816360846+02:00","level":"INFO","msg":"sender: started","stream_id":"tw0jhulg"}
+{"time":"2025-06-12T09:11:06.10612725+02:00","level":"INFO","msg":"Starting system monitor"}
